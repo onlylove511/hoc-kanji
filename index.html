@@ -1,34 +1,35 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
-    <title>Kanji Master - iPhone 15 Pro Max</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Kanji Master Pro</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="app-container">
-        <header class="main-header">
-            <div class="filter-row">
-                <div class="filter-group">
-                    <label>Cấp độ</label>
-                    <select id="level-select"></select>
-                </div>
-                <div class="filter-group">
-                    <label>Bài học</label>
-                    <select id="lesson-select"></select>
-                </div>
-            </div>
-            
-            <div class="nav-row">
-                <button id="prev-btn">TRƯỚC</button>
-                <div id="counter">0 / 0</div>
-                <button id="next-btn">SAU</button>
-            </div>
-        </header>
-
         <main class="main-layout">
             <section class="content-column">
+                <header class="main-header">
+                    <div class="filter-group">
+                        <label>Cấp độ</label>
+                        <select id="level-select"></select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Bài</label>
+                        <select id="lesson-select"></select>
+                    </div>
+                </header>
+
+                <div class="nav-row">
+                    <button id="prev-btn">TRƯỚC</button>
+                    <div id="counter">0 / 0</div>
+                    <button id="next-btn">SAU</button>
+                </div>
+
                 <div class="kanji-display-card">
                     <div class="kanji-box" id="kanji-display">?</div>
                     <div class="hanviet-box" id="hanviet-display">-</div>
@@ -43,6 +44,7 @@
                         <label>ÂM ON</label>
                         <div id="am-on" class="blue-text">-</div>
                     </div>
+
                     <div class="info-group">
                         <label>TỪ VỰNG</label>
                         <div id="tu-vung-display" class="grid-vocab"></div>
@@ -51,25 +53,24 @@
                         <label>VÍ DỤ</label>
                         <div id="vi-du-display" class="list-example"></div>
                     </div>
-                </div>
-
-                <div class="note-section">
-                    <label>GHI CHÚ & BỘ THỦ</label>
-                    <div id="note-display">...</div>
+                    <div class="info-group note-area">
+                        <label>GHI CHÚ & BỘ THỦ</label>
+                        <div id="note-display" class="note-content">...</div>
+                    </div>
                 </div>
             </section>
 
             <section class="practice-column">
                 <div class="practice-card">
-                    <h3>Tập viết Kanji</h3>
                     <div class="canvas-wrapper">
                         <canvas id="kanjiCanvas"></canvas>
                     </div>
-                    <button id="clearBtn">Xóa bảng</button>
+                    <button id="clearBtn">XÓA BẢNG</button>
                 </div>
             </section>
         </main>
     </div>
     <script src="script.js"></script>
 </body>
+
 </html>
