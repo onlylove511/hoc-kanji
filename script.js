@@ -2,213 +2,163 @@ let allData = [];
 let filteredData = [];
 let currentIndex = 0;
 
-// 1. Load dữ liệu từ file JSON
-fetch('data.json')
-    .then(res => res.json())
-    .then(data => {
-        allData = data;
-        init();
-    })
-    .catch(err => console.error("Lỗi tải file data.json. Hãy kiểm tra dấu ngoặc vuông [ ]", err));
-
-// 2. Khởi tạo ứng dụng
-function init() {
-    const levelSelect = document.getElementById('level-select');
-    
-    // Tự động tìm tất cả các Level có trong dữ liệu (N3, N2...)
-    const levels = [...new Set(allData.map(item => item.level))].sort((a, b) => b - a);
-    
-    // Tạo các <option> cho level-select
-    levelSelect.innerHTML = levels.map(lv => `<option value="${lv}">N${lv}</option>`).join('');
-
-    // Gán sự kiện thay đổi
-    levelSelect.onchange = updateLessons;
-    document.getElementById('lesson-select').onchange = filterData;
-
-    // Chạy lần đầu
-    updateLessons();
-}
-
-// 3. Cập nhật danh sách bài học dựa trên Level đã chọn
-function updateLessons() {
-    const lv = parseInt(document.getElementById('level-select').value);
-    const lessons = [...new Set(allData.filter(i => i.level === lv).map(i => i.lesson))].sort((a, b) => a - b);
-    
-    const lessonSelect = document.getElementById('lesson-select');
-    lessonSelect.innerHTML = lessons.map(l => `<option value="${l}">Bài ${l}</option>`).join('');
-    
-    filterData();
-}
-
-// 4. Lọc dữ liệu theo Level và Bài học
-function filterData() {
-    const lv = parseInt(document.getElementById('level-select').value);
-    const ls = parseInt(document.getElementById('lesson-select').value);
-    
-    filteredData = allData.filter(i => i.level === lv && i.lesson === ls);
-    currentIndex = 0;
-    
-    renderSidebar(); 
-    render();        
-}
-
-// 5. Hiển thị danh sách bên trái
-function renderSidebar() {
-    const sidebar = document.getElementById('sidebar-list');
-    sidebar.innerHTML = filteredData.map((item, index) => `
-        <div class="sidebar-item ${index === currentIndex ? 'active' : ''}" onclick="jumpTo(${index})">
-            <span class="side-kanji">${item.kanji}</span>
-            
-        </div>
-    `).join('');
-}
-//<span class="side-hv">${item.amhanviet}</span>
-function jumpTo(index) {
-    currentIndex = index;
-    render();
-    renderSidebar();
-}
-
-// 6. Hiển thị chi tiết nội dung Kanji
-function render() {
-    if (filteredData.length === 0) return;
-    const item = filteredData[currentIndex];
-
-    document.getElementById('kanji-display').innerText = item.kanji;
-    document.getElementById('hanviet-display').innerText = item.amhanviet;
-    document.getElementById('am-kun').innerText = item.amkun;
-    document.getElementById('am-on').innerText = item.amon;
-
-    // Xử lý từ vựng
-    document.getElementById('tu-vung-display').innerHTML = item.tuvung.split(';').map(v => {
-        return `<div class="vocab-item">${formatRuby(v.trim())}</div>`;
-    }).join('');
-
-    // Xử lý ví dụ
-    document.getElementById('vi-du-display').innerHTML = item.vidu.map(ex => {
-        let parts = ex.split(':');
-        return `<div class="example-item">
-            <div class="ex-jp">${formatRuby(parts[0])}</div>
-            <div class="ex-vn">${parts[1] || ''}</div>
-        </div>`;
-    }).join('');
-
-    document.getElementById('note-display').innerText = item.note || "";
-    document.getElementById('counter').innerText = `${currentIndex + 1} / ${filteredData.length}`;
-}
-
-// Helper format Furigana và Nghĩa
-function formatRuby(text) {
-    if (!text) return "";
-    
-    // 1. Xử lý Furigana: chuyển Kanji(furigana) thành thẻ <ruby>
-    let processed = text.replace(/([^\x00-\x7F]+)\(([^)]+)\)/g, '<ruby>$1<rt>$2</rt></ruby>');
-    
-    // 2. Xử lý bôi đỏ phần nghĩa tiếng Việt sau dấu hai chấm (:)
-    if (processed.includes(':')) {
-        let parts = processed.split(':');
-        // parts[0] là từ vựng tiếng Nhật, parts[1] là nghĩa tiếng Việt
-        return `<span class="vocab-kanji">${parts[0]}</span>: <span style="color: #e74c3c; font-weight: bold;">${parts[1]}</span>`;
-    }
-    
-    return processed;
-}
-
-// Điều hướng
-document.getElementById('next-btn').onclick = () => {
-    if (currentIndex < filteredData.length - 1) {
-        currentIndex++;
-        render();
-        renderSidebar();
-        document.querySelectorAll('.sidebar-item')[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-};
-
-document.getElementById('prev-btn').onclick = () => {
-    if (currentIndex > 0) {
-        currentIndex--;
-        render();
-        renderSidebar();
-        document.querySelectorAll('.sidebar-item')[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-};
-
-
-
-// 
-// Tập viết kanji
-// 
-const canvas = document.getElementById('kanjiCanvas');
-const ctx = canvas.getContext('2d');
-const clearBtn = document.getElementById('clearBtn');
-
+let canvas, ctx;
 let isDrawing = false;
 
-// Thiết lập nét vẽ
-ctx.strokeStyle = "#000";
-ctx.lineWidth = 5;
-ctx.lineCap = "round";
-ctx.lineJoin = "round";
+// 1. Khởi tạo ứng dụng sau khi DOM đã sẵn sàng
+window.addEventListener('DOMContentLoaded', () => {
+    canvas = document.getElementById('kanjiCanvas');
+    ctx = canvas.getContext('2d');
+    
+    // Khởi tạo Canvas và nạp dữ liệu
+    initCanvas();
+    fetchData();
+});
 
-function drawGrid() {
-    ctx.save(); // Lưu trạng thái hiện tại
-    ctx.strokeStyle = "#ddd";
-    ctx.lineWidth = 1;
-    ctx.setLineDash([5, 5]);
-    ctx.beginPath(); ctx.moveTo(150, 0); ctx.lineTo(150, 300); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0, 150); ctx.lineTo(300, 150); ctx.stroke();
-    ctx.restore(); // Khôi phục trạng thái để không ảnh hưởng nét vẽ Kanji
+function initCanvas() {
+    // Đảm bảo canvas có kích thước thực tế
+    const container = canvas.parentElement;
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientWidth; // Hình vuông
+
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 4;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    
+    drawGrid();
+
+    // Sự kiện Cảm ứng (Mobile)
+    canvas.addEventListener('touchstart', startDrawing, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', stopDrawing);
+
+    // Sự kiện Chuột (PC/Debug)
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', stopDrawing);
 }
 
-drawGrid();
+function drawGrid() {
+    const s = canvas.width;
+    ctx.save();
+    ctx.strokeStyle = "#eee";
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath(); ctx.moveTo(s/2, 0); ctx.lineTo(s/2, s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, s/2); ctx.lineTo(s, s/2); ctx.stroke();
+    ctx.restore();
+}
 
-// Lấy tọa độ chính xác của chuột/tay trong canvas
-function getCoordinates(e) {
+function getPos(e) {
     const rect = canvas.getBoundingClientRect();
-    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     return {
         x: clientX - rect.left,
         y: clientY - rect.top
     };
 }
 
-// Bắt đầu vẽ
 function startDrawing(e) {
+    if (e.type === 'touchstart') e.preventDefault();
     isDrawing = true;
-    const { x, y } = getCoordinates(e);
-    
-    ctx.beginPath();      // Bắt đầu đường dẫn mới
-    ctx.moveTo(x, y);     // CHỐT LỖI: Di chuyển bút đến điểm click đầu tiên mà không vẽ
+    const pos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
 }
 
-// Hàm vẽ
 function draw(e) {
     if (!isDrawing) return;
-    
-    const { x, y } = getCoordinates(e);
-    
-    ctx.lineTo(x, y);     // Vẽ đến vị trí mới
+    if (e.type === 'touchmove') e.preventDefault();
+    const pos = getPos(e);
+    ctx.lineTo(pos.x, pos.y);
     ctx.stroke();
 }
 
-// Kết thúc vẽ
 function stopDrawing() {
     isDrawing = false;
 }
 
-// Event Listeners cho Chuột
-canvas.addEventListener('mousedown', startDrawing);
-canvas.addEventListener('mousemove', draw);
-window.addEventListener('mouseup', stopDrawing); // Dùng window để tránh kẹt nét khi nhả chuột ngoài canvas
+// 2. Logic dữ liệu
+function fetchData() {
+    fetch('data.json')
+        .then(res => res.json())
+        .then(data => {
+            allData = data;
+            initControls();
+        })
+        .catch(err => console.error("Lỗi tải dữ liệu:", err));
+}
 
-// Event Listeners cho Cảm ứng
-canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDrawing(e); });
-canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); });
-canvas.addEventListener('touchend', stopDrawing);
+function initControls() {
+    const lvSelect = document.getElementById('level-select');
+    const levels = [...new Set(allData.map(i => i.level))].sort((a,b) => b-a);
+    lvSelect.innerHTML = levels.map(l => `<option value="${l}">N${l}</option>`).join('');
 
-// Nút Xóa
-clearBtn.addEventListener('click', () => {
+    lvSelect.onchange = updateLessons;
+    document.getElementById('lesson-select').onchange = filterData;
+    
+    document.getElementById('next-btn').onclick = () => navigate(1);
+    document.getElementById('prev-btn').onclick = () => navigate(-1);
+    document.getElementById('clearBtn').onclick = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawGrid();
+    };
+
+    updateLessons();
+}
+
+function updateLessons() {
+    const lv = parseInt(document.getElementById('level-select').value);
+    const lessons = [...new Set(allData.filter(i => i.level === lv).map(i => i.lesson))].sort((a,b) => a-b);
+    document.getElementById('lesson-select').innerHTML = lessons.map(l => `<option value="${l}">Bài ${l}</option>`).join('');
+    filterData();
+}
+
+function filterData() {
+    const lv = parseInt(document.getElementById('level-select').value);
+    const ls = parseInt(document.getElementById('lesson-select').value);
+    filteredData = allData.filter(i => i.level === lv && i.lesson === ls);
+    currentIndex = 0;
+    render();
+}
+
+function render() {
+    if (!filteredData[currentIndex]) return;
+    const item = filteredData[currentIndex];
+
+    document.getElementById('kanji-display').innerText = item.kanji;
+    document.getElementById('hanviet-display').innerText = item.amhanviet || "-";
+    document.getElementById('am-kun').innerText = item.amkun || "-";
+    document.getElementById('am-on').innerText = item.amon || "-";
+    document.getElementById('note-display').innerText = item.note || "";
+    document.getElementById('counter').innerText = `${currentIndex + 1} / ${filteredData.length}`;
+
+    // Từ vựng & Ví dụ
+    document.getElementById('tu-vung-display').innerHTML = (item.tuvung || "").split(';').map(v => `<div>${formatRuby(v.trim())}</div>`).join('');
+    document.getElementById('vi-du-display').innerHTML = (item.vidu || []).map(ex => {
+        const p = ex.split(':');
+        return `<div style="margin-bottom:8px"><div>${formatRuby(p[0])}</div><div class="meaning-text">${p[1]||''}</div></div>`;
+    }).join('');
+
+    // Xóa bảng khi đổi chữ
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawGrid();
-});
+}
+
+function formatRuby(text) {
+    if (!text) return "";
+    let processed = text.replace(/([^\x00-\x7F]+)\(([^)]+)\)/g, '<ruby>$1<rt>$2</rt></ruby>');
+    if (processed.includes(':')) {
+        let parts = processed.split(':');
+        return `${parts[0]}: <span class="meaning-text">${parts[1]}</span>`;
+    }
+    return processed;
+}
+
+function navigate(dir) {
+    currentIndex += dir;
+    if (currentIndex < 0) currentIndex = filteredData.length - 1;
+    if (currentIndex >= filteredData.length) currentIndex = 0;
+    render();
+}
