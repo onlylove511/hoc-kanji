@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Kanji Master</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div class="app-container">
+    <header>
+        <div class="filter-group">
+            <label>Cấp độ</label>
+            <select id="level-select"></select>
+        </div>
+        <div class="filter-group">
+            <label>Bài học</label>
+            <select id="lesson-select"></select>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <div class="kanji-list-sidebar" id="sidebar-list"></div>
+
+        <div class="left-panel">
+            <div class="kanji-box" id="kanji-display">?</div>
+            <div class="hanviet-box" id="hanviet-display">-</div>
+        </div>
+
+        <div class="right-panel">
+            <div class="info-row">
+                <div class="label">Âm KUN</div>
+                <div class="content highlight-blue" id="am-kun">-</div>
+            </div>
+            <div class="info-row">
+                <div class="label">Âm ON</div>
+                <div class="content highlight-blue" id="am-on">-</div>
+            </div>
+            <div class="info-row vocab-section">
+                <div class="label">Từ vựng</div>
+                <div class="content grid-vocab" id="tu-vung-display"></div>
+            </div>
+            <div class="info-row example-section">
+                <div class="label">Ví dụ</div>
+                <div class="content list-example" id="vi-du-display"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="note-box">
+        <div class="label">Ghi chú & Bộ thủ</div>
+        <div id="note-display">...</div>
+    </div>
+
+    <footer>
+        <button id="prev-btn">TRƯỚC</button>
+        <div id="counter">0 / 0</div>
+        <button id="next-btn">SAU</button>
+    </footer>
+    </div>
+    <div class="kanji-practice-container" style="text-align: center; margin-top: 20px;">
+    <h3>Tập viết Kanji</h3>
+    <canvas id="kanjiCanvas" width="300" height="300" style="border: 2px solid #333; background-color: #fff; cursor: crosshair; touch-action: none;"></canvas>
+    <br>
+    <button id="clearBtn" style="margin-top: 10px; padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #f44336; color: white; border: none; border-radius: 5px;">Xóa bảng</button>
+</div>
+
+    <script src="script.js"></script>
+</body>
+</html>

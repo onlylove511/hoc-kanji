@@ -1,0 +1,214 @@
+:root {
+    --primary: #2c3e50;
+    --blue: #3498db;
+    --red: #e74c3c;
+    --bg: #dcdde1;
+    --white: #ffffff;
+    --note-bg: #fffde7;
+}
+
+/* 1. RESET & BODY - KHÓA SCROLL TOÀN TRANG */
+body {
+    background: var(--bg);
+    margin: 0;
+    height: 100vh; /* Cố định chiều cao theo màn hình trình duyệt */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden; /* Ngăn cuộn trang web */
+}
+
+/* 2. CONTAINER CHÍNH */
+.app-container {
+    width: 1200px;
+    height: 96vh; /* Chiếm 96% chiều cao màn hình */
+    background: var(--white);
+    padding: 20px 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+/* 3. HEADER - LÀM ĐẸP CẤP ĐỘ & BÀI HỌC */
+header {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #eee;
+    flex-shrink: 0;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-group label {
+    font-weight: bold;
+    font-size: 16px;
+    color: var(--primary);
+}
+
+.filter-group select {
+    appearance: none;
+    background: var(--white) url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%232c3e50%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E') no-repeat right 12px top 50%;
+    background-size: 10px auto;
+    border: 2px solid var(--primary);
+    border-radius: 6px;
+    padding: 8px 35px 8px 15px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary);
+    cursor: pointer;
+    min-width: 130px;
+    outline: none;
+}
+
+/* 4. LAYOUT 3 CỘT */
+.main-layout {
+    display: grid;
+    grid-template-columns: 140px 380px 1fr; /* Cột sidebar | Cột Kanji | Cột nội dung */
+    gap: 20px;
+    flex: 1; /* Tự co giãn để chiếm phần còn lại của container */
+    min-height: 0; /* Quan trọng để nội dung bên trong có thể scroll */
+    margin-bottom: 10px;
+}
+
+/* Cột 1: Danh sách Kanji bài học */
+.kanji-list-sidebar {
+    border: 4px solid var(--primary);
+    border-radius: 10px;
+    overflow-y: auto; /* Cuộn nội bộ nếu danh sách bài dài */
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+}
+
+.sidebar-item {
+    padding: 12px;
+    text-align: center;
+    font-size: 26px;
+    font-weight: bold;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.sidebar-item:hover { background: #f0f2f5; color: var(--blue); }
+.sidebar-item.active { background: var(--blue); color: white; border-color: var(--blue); }
+
+/* Cột 2: Khung Kanji & Hán Việt */
+.left-panel {
+    border: 4px solid var(--primary);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.kanji-box {
+    flex: 1;
+    font-size: 180px; /* Cân đối để vừa màn hình */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    border-bottom: 4px solid var(--primary);
+}
+
+.hanviet-box {
+    height: 80px;
+    font-size: 36px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--red);
+    letter-spacing: 4px;
+}
+
+/* Cột 3: Nội dung chi tiết (KUN, ON, Từ vựng, Ví dụ) */
+.right-panel {
+    border: 4px solid var(--primary);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Khóa scroll tổng của panel */
+}
+
+.info-row { border-bottom: 2px solid #eee; flex-shrink: 0; }
+.info-row:last-child { border-bottom: none; }
+
+.label {
+    background: #f8f9fa;
+    padding: 5px 15px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #666;
+    text-transform: uppercase;
+}
+
+.content { padding: 10px 20px; font-size: 22px; }
+.highlight-blue { color: var(--blue); font-weight: bold; }
+
+/* Khu vực cuộn nội bộ cho Từ vựng & Ví dụ */
+.vocab-section, .example-section {
+    flex: 1;
+    overflow-y: auto; /* Chỉ cuộn bên trong ô này nếu dữ liệu quá nhiều */
+}
+
+.grid-vocab { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.vocab-meaning { color: var(--red); font-size: 19px; }
+
+.example-item { margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dashed #ddd; }
+.example-meaning { display: block; font-size: 18px; color: #555; font-style: italic; }
+
+/* 5. FURIGANA (RUBY) */
+ruby { ruby-align: center; }
+rt { font-size: 0.5em; color: var(--blue); font-weight: normal; }
+
+/* 6. NOTE BOX - GHI CHÚ */
+.note-box {
+    border: 3px solid #ccc;
+    border-radius: 10px;
+    background: var(--note-bg);
+    flex-shrink: 0;
+    margin-bottom: 10px;
+}
+
+#note-display { padding: 12px 20px; font-size: 20px; color: var(--red); line-height: 1.4; }
+
+/* 7. FOOTER - ĐIỀU HƯỚNG */
+footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 2px solid #eee;
+    flex-shrink: 0;
+}
+
+button {
+    padding: 12px 40px;
+    font-size: 20px;
+    font-weight: bold;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover { background: var(--blue); transform: scale(1.05); }
+#counter { font-size: 22px; font-weight: bold; color: var(--primary); }
+
+/* Tối ưu hóa thanh cuộn cho Sidebar và Panel */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #aaa; }
