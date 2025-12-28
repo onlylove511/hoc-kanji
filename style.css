@@ -2,128 +2,166 @@
     --primary: #2c3e50;
     --blue: #3498db;
     --red: #e74c3c;
-    --green-meaning: #27ae60; /* Màu mới cho nghĩa tiếng Việt */
-    --bg: #ffffff;
-    --border: #34495e;
+    --green: #27ae60;
+    --bg: #f2f2f2;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body {
-    margin: 0;
-    font-family: system-ui, -apple-system, sans-serif;
-    background: #f5f5f5;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    overflow: hidden;
+    margin: 0; font-family: -apple-system, system-ui, sans-serif;
+    background: var(--bg); height: 100vh; overflow: hidden;
 }
 
 .app-container {
-    width: 100%;
-    max-width: 932px;
-    height: 100vh;
-    background: white;
-    padding: 10px 20px;
-    display: flex;
-    flex-direction: column;
+    width: 100%; max-width: 1100px; height: 100vh;
+    margin: 0 auto; padding: 10px;
 }
 
-/* Header canh giữa và xếp chồng */
-.main-header {
+.main-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Chia đôi màn hình cực kỳ rộng rãi */
+    gap: 20px;
+    height: 100%;
+}
+
+/* --- CỘT TRÁI --- */
+.content-column {
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 12px;
-    padding: 15px 0;
-    border-bottom: 1px solid #eee;
-    background: #fff;
+    padding-right: 5px;
 }
-.filter-row {
-    display: flex;
-    gap: 20px;
+
+.main-header {
+    background: white; padding: 12px; border-radius: 12px;
+    display: flex; justify-content: space-around;
+}
+
+.filter-group { display: flex; align-items: center; gap: 10px; }
+.filter-group label { font-weight: bold; color: var(--primary); }
+
+select {
+    padding: 8px 12px; border-radius: 8px; border: 2px solid #ddd;
+    font-weight: 600; color: var(--primary); outline: none;
 }
 
 .nav-row {
-    display: flex;
-    gap: 40px;
-    align-items: center;
-}
-
-/* Nghĩa tiếng Việt */
-.meaning-text { 
-    color: #27ae60 !important; 
-    font-weight: bold; 
-}
-
-/* Đảm bảo canvas wrapper có kích thước */
-.canvas-wrapper {
-    background: white;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    width: 100%;
-    max-width: 300px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.filter-group { display: flex; align-items: center; gap: 8px; }
-.filter-group label { font-weight: bold; font-size: 14px; }
-
-select {
-    padding: 5px 10px;
-    border-radius: 5px;
-    border: 2px solid var(--primary);
-    font-weight: bold;
+    display: flex; justify-content: space-between; align-items: center;
+    background: #fff; padding: 10px 20px; border-radius: 12px;
 }
 
 #prev-btn, #next-btn {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 6px 20px;
-    border-radius: 20px;
-    font-weight: bold;
-    cursor: pointer;
+    background: var(--primary); color: white; border: none;
+    padding: 10px 25px; border-radius: 8px; font-weight: bold; cursor: pointer;
 }
 
-#counter { font-weight: bold; color: var(--primary); font-size: 18px; }
+#counter { font-weight: bold; font-size: 1.2rem; }
 
-/* Layout 2 cột cho màn hình ngang */
+.kanji-display-card {
+    border: 4px solid var(--primary); border-radius: 15px;
+    background: white; overflow: hidden; flex-shrink: 0;
+}
+
+.kanji-box { font-size: 120px; padding: 20px; text-align: center; }
+.hanviet-box { background: var(--red); color: white; text-align: center; padding: 10px; font-size: 28px; font-weight: bold; }
+
+.details-panel { background: white; border-radius: 12px; border: 1px solid #ddd; }
+.info-group { padding: 15px; border-bottom: 1px solid #eee; }
+.info-group label { font-size: 12px; color: #888; font-weight: bold; display: block; margin-bottom: 5px; }
+
+.blue-text { color: var(--blue); font-weight: bold; font-size: 20px; }
+.meaning-text { color: var(--green); font-weight: bold; }
+.note-area { background: #fffbe6; }
+
+/* --- CỘT PHẢI (TẬP VIẾT) --- */
+.practice-column { 
+    height: 100%; 
+}
+
+.practice-card {
+    background: #eaecf0; 
+    padding: 10px; /* Giảm padding để tăng diện tích canvas */
+    border-radius: 15px;
+    display: flex; 
+    flex-direction: column; 
+    height: 100%;
+}
+
+.canvas-wrapper {
+    background: white; 
+    border-radius: 10px; 
+    border: 1px solid #bdc3c7;
+    flex: 1; /* Tự động chiếm toàn bộ khoảng trống còn lại */
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    overflow: hidden; 
+    min-height: 0;
+}
+
+#kanjiCanvas { 
+    width: 100%; 
+    height: 100%; 
+    /* Bỏ aspect-ratio cố định để canvas lấp đầy wrapper */
+    touch-action: none; 
+    background: white;
+}
+
+#clearBtn {
+    margin-top: 10px; 
+    padding: 15px; 
+    background: var(--red);
+    color: white; 
+    border: none; 
+    border-radius: 12px;
+    font-weight: bold; 
+    font-size: 1.1rem; 
+    cursor: pointer;
+    flex-shrink: 0; /* Đảm bảo nút không bị mất khi màn hình nhỏ */
+}
+
+/* FURIGANA */
+rt { font-size: 0.6em; color: var(--blue); }
+
+/* Bố cục mặc định cho màn hình lớn (Tablet, Laptop) */
 .main-layout {
     display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
-    gap: 20px;
-    flex: 1;
-    overflow: hidden;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    height: 100%;
 }
 
-.content-column { overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-right: 5px; }
+/* KHI MÀN HÌNH NHỎ HƠN 450PX */
+@media (max-width: 450px) {
+    body {
+        overflow-y: auto; /* Cho phép cuộn toàn trang để xem phần tập viết ở dưới */
+    }
 
-.kanji-display-card { border: 2px solid var(--border); border-radius: 10px; text-align: center; }
-.kanji-box { font-size: 100px; padding: 15px; }
-.hanviet-box { border-top: 2px solid var(--border); padding: 10px; font-size: 24px; font-weight: bold; color: var(--red); }
+    .app-container {
+        height: auto; /* Bỏ cố định chiều cao 100vh */
+        overflow: visible;
+    }
 
-.details-panel { border: 2px solid var(--border); border-radius: 8px; }
-.info-group { border-bottom: 1px solid #ddd; padding: 8px 12px; }
-.info-group:last-child { border-bottom: none; }
-.info-group label { font-size: 10px; color: #7f8c8d; font-weight: bold; display: block; margin-bottom: 4px; }
+    .main-layout {
+        display: flex;
+        flex-direction: column; /* Chuyển thành 1 cột dọc */
+        height: auto;
+    }
 
-.blue-text { color: var(--blue); font-weight: bold; font-size: 18px; }
+    .content-column {
+        height: auto;
+        overflow: visible; /* Để cột thông tin giãn theo nội dung */
+    }
 
-/* Style cho nghĩa tiếng Việt */
-.meaning-text { color: var(--green-meaning); font-weight: bold; }
+    .practice-column {
+        height: 450px; /* Cố định chiều cao vùng tập viết ở dưới để dễ vẽ */
+        margin-top: 20px;
+        margin-bottom: 30px;
+    }
 
-.grid-vocab { display: grid; grid-template-columns: 1fr; gap: 5px; font-size: 14px; }
-.list-example { font-size: 14px; line-height: 1.5; }
-
-.note-section { background: #fffbe6; border: 1px solid #ffe58f; padding: 10px; border-radius: 8px; }
-.note-section label { font-size: 10px; font-weight: bold; color: #856404; }
-
-.practice-column { display: flex; justify-content: center; }
-.practice-card { background: #e0e0e0; padding: 15px; border-radius: 10px; width: 100%; text-align: center; }
-.canvas-wrapper { background: white; margin: 10px 0; border: 1px solid #ccc; }
-#kanjiCanvas { width: 100%; aspect-ratio: 1 / 1; touch-action: none; }
-#clearBtn { background: var(--red); color: white; border: none; padding: 10px; border-radius: 5px; width: 100%; font-weight: bold; }
-
-rt { color: var(--blue); }
+    .kanji-box {
+        font-size: 80px; /* Thu nhỏ Kanji hiển thị một chút trên mobile */
+    }
+}
