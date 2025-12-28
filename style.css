@@ -39,8 +39,62 @@ body {
     display: flex; justify-content: space-around;
 }
 
-.filter-group { display: flex; align-items: center; gap: 10px; }
-.filter-group label { font-weight: bold; color: var(--primary); }
+/* FIX LỖI HEADER TRÊN GITHUB/MOBILE */
+.header-controls {
+    background: white;
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.filter-row {
+    display: flex;
+    flex-wrap: wrap; /* Cho phép rớt dòng nếu màn hình quá hẹp */
+    justify-content: space-around;
+    gap: 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-group label {
+    font-weight: bold;
+    color: var(--primary);
+    white-space: nowrap; /* Ngăn chữ Cấp độ bị nhảy dòng */
+}
+
+select {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    font-weight: bold;
+    min-width: 80px;
+}
+
+.nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 5px;
+}
+
+/* Đảm bảo bảng viết luôn rộng rãi */
+.practice-card {
+    background: #eaecf0;
+    padding: 10px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
 
 select {
     padding: 8px 12px; border-radius: 8px; border: 2px solid #ddd;
